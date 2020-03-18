@@ -3,7 +3,7 @@ from ag import GeneticAlgorithm
 
 def main():
     params = {
-        "size_pop": 50,
+        "size_pop": 100,
         "crossover_rate": 0.9,
         "mutation_rate": 0.05,
         "generations": 100

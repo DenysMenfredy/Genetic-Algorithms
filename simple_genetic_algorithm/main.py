@@ -3,10 +3,10 @@ from ag import GeneticAlgorithm
 
 def main():
     params = {
-        "size_pop": 100,
+        "size_pop": 150,
         "crossover_rate": 0.9,
-        "mutation_rate": 0.05,
-        "generations": 100
+        "mutation_rate": 0.03,
+        "generations": 200
     }
     
     genetic_algorithm = GeneticAlgorithm(**params)

@@ -53,8 +53,8 @@ class GeneticAlgorithm:
         new_pop.sort(key = lambda indv: indv.fitness)
         percentual = int(self.size_pop * self.crossover_rate)
         percentual = percentual if percentual % 2 == 0 else percentual + 1
-        
-        
+        population.sort(key = lambda indv: indv.fitness, reverse=True)
+                
         return new_pop + population[percentual: ]
     
     def selection(self, population):
@@ -135,7 +135,7 @@ class GeneticAlgorithm:
         labels = ["bests", "average", "worts"]
         data = [bests, average, worsts]
         
-        for l,y in zip(labels, data):
+        for l, y in zip(labels, data):
             plt.plot(generations, y, label=l)
         
         plt.title("Fitness per Generation Relationship")

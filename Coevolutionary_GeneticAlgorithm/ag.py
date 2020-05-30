@@ -67,6 +67,7 @@ class AG:
         nova_populacao.sort(key=lambda individuo: individuo.fitness)
         percentual = int(self.size_pop * self.taxa_cruzamento)
         percentual = percentual if percentual % 2 == 0 else percentual + 1
+        populacao.sort(key = lambda indv: indv.fitness, reverse=True)
         
         return nova_populacao + populacao[percentual: ]
     

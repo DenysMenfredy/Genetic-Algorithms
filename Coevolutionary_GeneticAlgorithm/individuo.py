@@ -11,6 +11,7 @@ class Individuo:
     
     def calcFitness(self,):
         """ EGGHOLDER FUNCTION """
+        
         return -(self.cromossomo[1] + 47) * np.sin(np.sqrt(abs(self.cromossomo[1] + \
             (self.cromossomo[0] / 2) + 47))) - self.cromossomo[0] * \
                 np.sin(np.sqrt(abs(self.cromossomo[0] - (self.cromossomo[1] + 47))))

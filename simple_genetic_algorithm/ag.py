@@ -5,15 +5,18 @@ from os import path
 from matplotlib import pyplot as plt
 
 class GeneticAlgorithm:
+    
     def __init__(self, **params):
         self.size_pop = params["size_pop"]
         self.num_generations = params["generations"]
         self.crossover_rate = params["crossover_rate"]
         self.mutation_rate = params["mutation_rate"]
         self.best_individual = None
-    
+        self.agent = params["agent"]
     
     def start(self, ):
+        """Main method of the algorithm"""
+        
         self.resetData()
         population =  self.initialPop()
         self.evalute(population)
@@ -30,14 +33,19 @@ class GeneticAlgorithm:
     
     
     def initialPop(self, ):
-        return [Agent() for _ in range(self.size_pop)]
+        """Generate a initial population"""
+        return [self.agent() for _ in range(self.size_pop)]
     
     def evalute(self, population):
+        """Evaluate each individual computing their fitness"""
+        
         for individual in population:
             individual.fitness = individual.fitness_function()
             
     
     def findBest(self, population):
+        """Get the best individual of the population based on its fitness"""
+        
         best = sorted(population, key = lambda indv: indv.fitness)[0]
          
         if not self.best_individual:
@@ -47,6 +55,8 @@ class GeneticAlgorithm:
             self.best_individual = best.copy()
             
     def reproduce(self, population):
+        """Reproduce the population using th genetic operators"""
+        
         mating_pool = self.selection(population)
         new_pop = self.crossover(mating_pool)
         self.mutation(new_pop)
@@ -58,6 +68,8 @@ class GeneticAlgorithm:
         return new_pop + population[percentual: ]
     
     def selection(self, population):
+        """Select parents to mating using tournament selection method"""
+        
         mating_pool = []
         amount = 3
         percentual = int(self.size_pop * self.crossover_rate)
@@ -71,21 +83,25 @@ class GeneticAlgorithm:
         return mating_pool
     
     def crossover(self, mating_pool):
+        """Mating individuals to generate offspring based in crossover rate"""
+        
         new_pop = []
         percentual = int(self.size_pop * self.crossover_rate)
         percentual = percentual if percentual % 2 == 0 else percentual + 1
         size = len(mating_pool)
         
-        for _ in range(percentual):
+        for _ in range(0, percentual, 2):
             indv1 = mating_pool[randrange(size)]
             indv2 = mating_pool[randrange(size)]
             indv12, indv21 = self.twoPointCrossover(indv1.chromosome, indv2.chromosome)
-            new_pop.append(Agent(chromosome=indv12))
-            new_pop.append(Agent(chromosome=indv21))
+            new_pop.append(self.agent(chromosome=indv12))
+            new_pop.append(self.agent(chromosome=indv21))
             
         return new_pop
     
     def onePointCrossover(self, chrm1, chrm2):
+        """One point crossover method"""
+        
         cut_point1 = randrange(len(chrm1))
         cut_point2 = cut_point1
         
@@ -95,6 +111,7 @@ class GeneticAlgorithm:
         return(chrm12, chrm21)
     
     def twoPointCrossover(self, chrm1, chrm2):
+        """Two point crossover method"""
         cut_point1 = randrange(len(chrm1))
         cut_point2 = cut_point1
         
@@ -104,6 +121,8 @@ class GeneticAlgorithm:
         return(chrm12, chrm21)
     
     def mutation(self, population):
+        """Mutate the individuals based in mutation rate"""
+        
         for indiv in population:
             mutate = random() < self.mutation_rate
             if mutate:
@@ -114,12 +133,16 @@ class GeneticAlgorithm:
     
     
     def saveData(self, population):
+        """Save fitness data to use in graphic ploting"""
+        
         all_fitness = np.array([indv.fitness for indv in population])
         with open(path.abspath('data.npy'), "ab+") as file:
             np.save(file, all_fitness)
             
     
     def plotGraphic(self, ):
+        """Plot fitness vs. generation graphic"""
+        
         generations = np.arange(self.num_generations)
         bests = np.ndarray((0))
         average = np.ndarray((0))
@@ -146,4 +169,6 @@ class GeneticAlgorithm:
         plt.show()
         
     def resetData(self, ):
+        """Reset data in file"""
+        
         open(path.abspath("data.npy"), "wb").close()

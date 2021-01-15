@@ -13,6 +13,7 @@ class GeneticAlgorithm:
         self.mutation_rate = params["mutation_rate"]
         self.best_individual = None
         self.agent = params["agent"]
+        self.agent_dimension = params["agent_dimension"]
     
     def start(self, ):
         """Main method of the algorithm"""
@@ -34,7 +35,7 @@ class GeneticAlgorithm:
     
     def initialPop(self, ):
         """Generate a initial population"""
-        return [self.agent() for _ in range(self.size_pop)]
+        return [self.agent(dimension=self.agent_dimension) for _ in range(self.size_pop)]
     
     def evalute(self, population):
         """Evaluate each individual computing their fitness"""
@@ -94,8 +95,8 @@ class GeneticAlgorithm:
             indv1 = mating_pool[randrange(size)]
             indv2 = mating_pool[randrange(size)]
             indv12, indv21 = self.twoPointCrossover(indv1.chromosome, indv2.chromosome)
-            new_pop.append(self.agent(chromosome=indv12))
-            new_pop.append(self.agent(chromosome=indv21))
+            new_pop.append(self.agent(dimension=self.agent_dimension, chromosome=indv12))
+            new_pop.append(self.agent(dimension=self.agent_dimension, chromosome=indv21))
             
         return new_pop
     

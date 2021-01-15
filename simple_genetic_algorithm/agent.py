@@ -3,18 +3,19 @@ import numpy as np
 
 class Agent(object):
     
-    size_chromosome = None
+    # dimension = None
     higher_limit = None
     lowest_limit = None
     
-    def __init__(self, chromosome=None):
+    def __init__(self, dimension=None, chromosome=None):
+        self.dimension = dimension
         self.chromosome = chromosome if chromosome else self.randomChromosome()
         self.fitness = 0
         
     def randomChromosome(self, ):
         """Generate a random chromosome"""
         
-        return [uniform(self.lowest_limit, self.higher_limit) for _ in range(self.size_chromosome)]
+        return [uniform(self.lowest_limit, self.higher_limit) for _ in range(self.dimension)]
     
     def fitness_function(self, ):
         """Agent fitness function"""
@@ -24,8 +25,9 @@ class Agent(object):
     def copy(self, ):
         """Make a copy of the agent"""
         
-        copy = Agent(chromosome=self.chromosome)
+        copy = Agent(dimension=self.dimension, chromosome=self.chromosome)
         copy.fitness = self.fitness
+        
         return copy
     
     def __str__(self, ):

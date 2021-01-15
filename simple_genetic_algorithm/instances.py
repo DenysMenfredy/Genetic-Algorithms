@@ -3,12 +3,12 @@ import numpy as np
 
 class HolderTable(Agent):
     
-    def __init__(self, chromosome=None):
-        self.higher_limit = 10
-        self.lowest_limit = -10
-        self.size_chromosome = 2
-        super().__init__(chromosome)
-        
+    higher_limit = 10
+    lowest_limit = -10
+    
+    def __init__(self, dimension=None, chromosome=None):
+        # self.dimension = dimension
+        super().__init__(dimension, chromosome)    
 
     def fitness_function(self, ):
         return - abs(np.sin(self.chromosome[0]) * np.cos(self.chromosome[1])\

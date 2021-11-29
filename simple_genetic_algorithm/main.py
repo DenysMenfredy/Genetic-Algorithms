@@ -1,5 +1,5 @@
-from ag import GeneticAlgorithm
-from instances import HolderTable
+from ga import GeneticAlgorithm
+from instances import *
 
 
 def main():
@@ -10,8 +10,8 @@ def main():
         "crossover_rate": 0.9,
         "mutation_rate": 0.03,
         "generations": 100,
-        "agent_dimension": 2,
-        "agent": HolderTable
+        "agent_dimension": 10,
+        "agent": Rastrigin
     }
     
     genetic_algorithm = GeneticAlgorithm(**params) 

@@ -23,11 +23,12 @@ class GeneticAlgorithm:
         self.evalute(population)
         self.findBest(population)
         self.saveData(population)
-        for _ in range(self.num_generations):
-              population = self.reproduce(population)
-              self.evalute(population)
-              self.findBest(population)
-              self.saveData(population)
+        for gen in range(1, self.num_generations):
+            print(f'running generation {gen}')
+            population = self.reproduce(population)
+            self.evalute(population)
+            self.findBest(population)
+            self.saveData(population)
         
         
         return self.best_individual

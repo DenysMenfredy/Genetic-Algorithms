@@ -1,5 +1,5 @@
 from random import sample, randrange, random
-from agent import Agent
+from simple_genetic_algorithm.agent import Agent
 import numpy as np
 from os import path
 from matplotlib import pyplot as plt
@@ -14,6 +14,8 @@ class GeneticAlgorithm:
         self.best_individual = None
         self.agent = params["agent"]
         self.agent_dimension = params["agent_dimension"]
+        self.execution_name = params["execution_name"]
+        self.data_path = f'data/{self.execution_name}.npy'
     
     def start(self, ):
         """Main method of the algorithm"""
@@ -138,7 +140,7 @@ class GeneticAlgorithm:
         """Save fitness data to use in graphic ploting"""
         
         all_fitness = np.array([indv.fitness for indv in population])
-        with open(path.abspath('data.npy'), "ab+") as file:
+        with open(path.abspath(self.data_path), "ab+") as file:
             np.save(file, all_fitness)
             
     
@@ -150,7 +152,7 @@ class GeneticAlgorithm:
         average = np.ndarray((0))
         worsts = np.ndarray((0))
         
-        with open(path.abspath('data.npy'), "rb") as file:
+        with open(path.abspath(self.data_path), "rb") as file:
             for _ in range(self.num_generations):
                 all_fitness = np.load(file)
                 bests = np.append(bests, min(all_fitness))
@@ -173,4 +175,4 @@ class GeneticAlgorithm:
     def resetData(self, ):
         """Reset data in file"""
         
-        open(path.abspath("data.npy"), "wb").close()
+        open(path.abspath(self.data_path), "wb").close()

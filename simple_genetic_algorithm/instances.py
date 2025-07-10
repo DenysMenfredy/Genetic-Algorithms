@@ -1,4 +1,4 @@
-from agent import Agent
+from simple_genetic_algorithm.agent import Agent
 import numpy as np
 
 class HolderTable(Agent):

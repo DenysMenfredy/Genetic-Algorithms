@@ -1,9 +1,13 @@
 from ga import GeneticAlgorithm
 from instances import *
+from utils.file import create_folder
+from utils.date import generate_execution_name
 
 
 def main():
-    
+    create_folder('data') 
+    execution_name = generate_execution_name() 
+
     # agent params
     params = {
         "size_pop": 100,
@@ -11,7 +15,8 @@ def main():
         "mutation_rate": 0.03,
         "generations": 100,
         "agent_dimension": 10,
-        "agent": Rastrigin
+        "agent": Rastrigin,
+        "execution_name": execution_name
     }
     
     genetic_algorithm = GeneticAlgorithm(**params) 

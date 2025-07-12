@@ -3,6 +3,11 @@ from simple_genetic_algorithm.agent import Agent
 import numpy as np
 from os import path
 from matplotlib import pyplot as plt
+import matplotlib.animation as animation
+from threading import Thread
+import time
+from IPython.display import display, clear_output
+import sys
 
 class GeneticAlgorithm:
     
@@ -16,25 +21,219 @@ class GeneticAlgorithm:
         self.agent_dimension = params["agent_dimension"]
         self.execution_name = params["execution_name"]
         self.data_path = f'data/{self.execution_name}.npy'
+        
+        # Interactive plotting attributes
+        self.enable_interactive_plot = params.get("enable_interactive_plot", False)
+        self.plot_update_interval = params.get("plot_update_interval", 100)  # milliseconds
+        self.colab_mode = params.get("colab_mode", False)  # For Google Colab compatibility
+        self.fig = None
+        self.ax = None
+        self.lines = {}
+        self.current_generation = 0
+        self.plot_thread = None
+        self.stop_plotting = False
+        self.fitness_history = {'bests': [], 'average': [], 'worsts': []}
     
     def start(self, ):
         """Main method of the algorithm"""
         
         self.resetData()
-        population =  self.initialPop()
+        
+        # Initialize interactive plot if enabled
+        if self.enable_interactive_plot:
+            if self.colab_mode:
+                self.initColabPlot()
+            else:
+                self.initInteractivePlot()
+        
+        population = self.initialPop()
         self.evalute(population)
         self.findBest(population)
         self.saveData(population)
+        
+        # Update plot for initial generation
+        if self.enable_interactive_plot:
+            self.updatePlot()
+        
         for gen in range(1, self.num_generations):
             print(f'running generation {gen}')
+            self.current_generation = gen
             population = self.reproduce(population)
             self.evalute(population)
             self.findBest(population)
             self.saveData(population)
+            
+            # Update plot for current generation
+            if self.enable_interactive_plot:
+                if self.colab_mode:
+                    self.updateColabPlot()
+                else:
+                    self.updatePlot()
+                    plt.pause(0.01)  # Small pause to allow plot update
         
+        # Keep plot alive after algorithm finishes
+        if self.enable_interactive_plot:
+            self.stop_plotting = True
+            if self.colab_mode:
+                self.finalColabPlot()
+            else:
+                print("Algorithm finished. Close the plot window to exit.")
+                plt.show()
         
         return self.best_individual
     
+    def initColabPlot(self):
+        """Initialize plotting for Google Colab environment"""
+        # Enable inline plotting for Colab
+        plt.ioff()  # Turn off interactive mode for Colab
+        print("Interactive plotting enabled for Google Colab")
+        print("Plot will update after each generation...")
+    
+    def updateColabPlot(self):
+        """Update plot in Google Colab with cell output refresh"""
+        if not self.enable_interactive_plot:
+            return
+            
+        try:
+            # Read current data from file
+            generations = np.arange(self.current_generation + 1)
+            bests = np.ndarray((0))
+            average = np.ndarray((0))
+            worsts = np.ndarray((0))
+            
+            with open(path.abspath(self.data_path), "rb") as file:
+                for _ in range(self.current_generation + 1):
+                    all_fitness = np.load(file)
+                    bests = np.append(bests, min(all_fitness))
+                    worsts = np.append(worsts, max(all_fitness))
+                    average = np.append(average, all_fitness.mean())
+            
+            # Store history for smoother updates
+            self.fitness_history['bests'] = bests.tolist()
+            self.fitness_history['average'] = average.tolist()
+            self.fitness_history['worsts'] = worsts.tolist()
+            
+            # Update plot every few generations to avoid too much output
+            if self.current_generation % 5 == 0 or self.current_generation == 1:
+                clear_output(wait=True)
+                
+                plt.figure(figsize=(12, 6))
+                plt.plot(generations, bests, 'g-', label='Best', linewidth=2, marker='o', markersize=3)
+                plt.plot(generations, average, 'b-', label='Average', linewidth=2, marker='s', markersize=3)
+                plt.plot(generations, worsts, 'r-', label='Worst', linewidth=2, marker='^', markersize=3)
+                
+                plt.xlabel('Generation')
+                plt.ylabel('Fitness Value')
+                plt.title(f'Real-time Fitness Evolution - Generation {self.current_generation}')
+                plt.legend()
+                plt.grid(True, alpha=0.3)
+                plt.tight_layout()
+                plt.show()
+                
+                # Print current statistics
+                print(f"Generation {self.current_generation}:")
+                print(f"  Best Fitness: {bests[-1]:.6f}")
+                print(f"  Average Fitness: {average[-1]:.6f}")
+                print(f"  Worst Fitness: {worsts[-1]:.6f}")
+                print("-" * 50)
+                
+        except Exception as e:
+            print(f"Error updating Colab plot: {e}")
+    
+    def finalColabPlot(self):
+        """Show final plot in Google Colab"""
+        clear_output(wait=True)
+        
+        generations = np.arange(len(self.fitness_history['bests']))
+        bests = np.array(self.fitness_history['bests'])
+        average = np.array(self.fitness_history['average'])
+        worsts = np.array(self.fitness_history['worsts'])
+        
+        plt.figure(figsize=(12, 8))
+        plt.plot(generations, bests, 'g-', label='Best', linewidth=2, marker='o', markersize=4)
+        plt.plot(generations, average, 'b-', label='Average', linewidth=2, marker='s', markersize=4)
+        plt.plot(generations, worsts, 'r-', label='Worst', linewidth=2, marker='^', markersize=4)
+        
+        plt.xlabel('Generation')
+        plt.ylabel('Fitness Value')
+        plt.title('Final Fitness Evolution Results')
+        plt.legend()
+        plt.grid(True, alpha=0.3)
+        plt.tight_layout()
+        plt.show()
+        
+        print("🎉 Genetic Algorithm Completed!")
+        print(f"Total Generations: {len(generations)}")
+        print(f"Final Best Fitness: {bests[-1]:.6f}")
+        print(f"Final Average Fitness: {average[-1]:.6f}")
+        print(f"Improvement: {((bests[0] - bests[-1]) / bests[0] * 100):.2f}%")
+    
+    def initInteractivePlot(self):
+        """Initialize the interactive plot"""
+        plt.ion()  # Turn on interactive mode
+        self.fig, self.ax = plt.subplots(figsize=(10, 6))
+        
+        # Initialize empty lines for each metric
+        self.lines['bests'], = self.ax.plot([], [], 'g-', label='Best', linewidth=2)
+        self.lines['average'], = self.ax.plot([], [], 'b-', label='Average', linewidth=2)
+        self.lines['worsts'], = self.ax.plot([], [], 'r-', label='Worst', linewidth=2)
+        
+        # Set up the plot
+        self.ax.set_xlabel('Generation')
+        self.ax.set_ylabel('Fitness Value')
+        self.ax.set_title('Real-time Fitness Evolution')
+        self.ax.legend()
+        self.ax.grid(True, alpha=0.3)
+        
+        # Set initial axis limits
+        self.ax.set_xlim(0, self.num_generations)
+        self.ax.set_ylim(0, 1)  # Will be updated dynamically
+        
+        plt.tight_layout()
+    
+    def updatePlot(self):
+        """Update the interactive plot with current data"""
+        if not self.enable_interactive_plot:
+            return
+            
+        try:
+            generations = np.arange(self.current_generation + 1)
+            bests = np.ndarray((0))
+            average = np.ndarray((0))
+            worsts = np.ndarray((0))
+            
+            # Read data from file
+            with open(path.abspath(self.data_path), "rb") as file:
+                for _ in range(self.current_generation + 1):
+                    all_fitness = np.load(file)
+                    bests = np.append(bests, min(all_fitness))
+                    worsts = np.append(worsts, max(all_fitness))
+                    average = np.append(average, all_fitness.mean())
+            
+            # Update line data
+            self.lines['bests'].set_data(generations, bests)
+            self.lines['average'].set_data(generations, average)
+            self.lines['worsts'].set_data(generations, worsts)
+            
+            # Update axis limits dynamically
+            if len(bests) > 0:
+                y_min = min(np.min(bests), np.min(average), np.min(worsts))
+                y_max = max(np.max(bests), np.max(average), np.max(worsts))
+                y_range = y_max - y_min
+                self.ax.set_ylim(y_min - 0.1 * y_range, y_max + 0.1 * y_range)
+            
+            # Update x-axis if needed
+            if self.current_generation > 0:
+                self.ax.set_xlim(0, max(self.current_generation, 10))
+            
+            # Redraw the plot
+            self.ax.relim()
+            self.ax.autoscale_view()
+            self.fig.canvas.draw()
+            self.fig.canvas.flush_events()
+            
+        except Exception as e:
+            print(f"Error updating plot: {e}")
     
     def initialPop(self, ):
         """Generate a initial population"""
@@ -145,7 +344,7 @@ class GeneticAlgorithm:
             
     
     def plotGraphic(self, ):
-        """Plot fitness vs. generation graphic"""
+        """Plot fitness vs. generation graphic (static version)"""
         
         generations = np.arange(self.num_generations)
         bests = np.ndarray((0))
@@ -159,20 +358,28 @@ class GeneticAlgorithm:
                 worsts = np.append(worsts, max(all_fitness))
                 average = np.append(average, all_fitness.mean())
                 
-        labels = ["bests", "average", "worts"]
+        labels = ["bests", "average", "worsts"]
         data = [bests, average, worsts]
         
+        plt.figure(figsize=(10, 6))
         for l, y in zip(labels, data):
-            plt.plot(generations, y, label=l)
+            plt.plot(generations, y, label=l, linewidth=2)
         
         plt.title("Fitness per Generation Relationship")
         plt.xlabel("Generation")
         plt.ylabel("Fitness value")
         plt.legend(loc="best")
-        plt.grid(True)
+        plt.grid(True, alpha=0.3)
+        plt.tight_layout()
         plt.show()
+    
+    def plotInteractiveGraphic(self):
+        """Enable interactive plotting mode"""
+        self.enable_interactive_plot = True
         
     def resetData(self, ):
         """Reset data in file"""
         
         open(path.abspath(self.data_path), "wb").close()
+
+

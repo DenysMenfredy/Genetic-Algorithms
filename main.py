@@ -9,24 +9,24 @@ def main():
     execution_name = generate_execution_name() 
 
     colab_params = {
-        "size_pop": 50,
-        "generations": 100,
+        "size_pop": 100,
+        "generations": 200,
         "crossover_rate": 0.8,
         "mutation_rate": 0.1,
-        "agent": Rastrigin,  # Your agent class
+        "agent": Agent,  # Your agent class
         "agent_dimension": 10,
-        "execution_name": "colab_test_run",
+        "execution_name": f"colab_{execution_name}",
         "enable_interactive_plot": True,
         "colab_mode": True,  # Enable Colab mode
     }
  
     # agent params
     regular_params = {
-        "size_pop": 100,
+        "size_pop": 200,
         "crossover_rate": 0.8,
         "mutation_rate": 0.1,
-        "generations": 100,
-        "agent_dimension": 10,
+        "generations": 200,
+        "agent_dimension": 20,
         "agent": Rastrigin,
         "execution_name": execution_name,
         "enable_interactive_plot": True,  # Enable interactive plotting

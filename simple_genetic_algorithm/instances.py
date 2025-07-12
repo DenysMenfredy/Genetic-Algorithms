@@ -25,12 +25,19 @@ class Ackley(Agent):
 
     def fitness_function(self):
         a, b, c = 20, 0.2, 2 * np.pi
-
-        sum1 = sum([x_i** 2 for x_i in self.chromosome])
-        sum2 = sum([np.cos(c * x_i) for x_i in self.chromosome])
-
-        return -a * np.exp(-b * np.sqrt((1/self.dimension) * sum1)) - \
-                np.exp((1/self.dimension)* sum2) + a + np.exp(1)
+        x = np.array(self.chromosome)
+    
+        sum1 = np.sum(x ** 2)
+        sum2 = np.sum(np.cos(c * x))
+    
+        exp_arg1 = -b * np.sqrt(sum1 / self.dimension)
+        exp_arg2 = sum2 / self.dimension
+    
+        # Clip to prevent overflow (exp(700) is near the limit)
+        term1 = -a * np.exp(np.clip(exp_arg1, -700, 700))
+        term2 = -np.exp(np.clip(exp_arg2, -700, 700))
+        
+        return term1 + term2 + a + np.exp(1)
 
 class Rastrigin(Agent):
     

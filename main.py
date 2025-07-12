@@ -13,7 +13,7 @@ def main():
         "generations": 100,
         "crossover_rate": 0.8,
         "mutation_rate": 0.1,
-        "agent": Agent,  # Your agent class
+        "agent": Rastrigin  # Your agent class
         "agent_dimension": 10,
         "execution_name": "colab_test_run",
         "enable_interactive_plot": True,

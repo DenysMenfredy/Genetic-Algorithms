@@ -84,10 +84,30 @@ class GeneticAlgorithm:
     
     def initColabPlot(self):
         """Initialize plotting for Google Colab environment"""
-        # Enable inline plotting for Colab
-        plt.ioff()  # Turn off interactive mode for Colab
-        print("Interactive plotting enabled for Google Colab")
-        print("Plot will update after each generation...")
+        # Configure matplotlib for Colab
+        try:
+            # Force inline backend for Colab
+            import matplotlib
+            matplotlib.use('Agg')  # Use non-interactive backend
+            import matplotlib.pyplot as plt
+            plt.ioff()  # Turn off interactive mode for Colab
+            
+            # Test plot to verify setup
+            fig, ax = plt.subplots(figsize=(8, 4))
+            ax.plot([0, 1], [0, 1], 'b-', label='Test')
+            ax.set_title('Colab Plotting Test - Setup Complete')
+            ax.legend()
+            plt.tight_layout()
+            plt.show()
+            plt.close()
+            
+            print("✅ Interactive plotting enabled for Google Colab")
+            print("📊 Plot will update after each generation...")
+            print("🔧 If plots don't appear, try restarting runtime and running again.")
+            
+        except Exception as e:
+            print(f"❌ Error setting up Colab plotting: {e}")
+            print("💡 Try: Runtime > Restart runtime, then run cells again")
     
     def updateColabPlot(self):
         """Update plot in Google Colab with cell output refresh"""
@@ -117,28 +137,39 @@ class GeneticAlgorithm:
             if self.current_generation % 5 == 0 or self.current_generation == 1:
                 clear_output(wait=True)
                 
-                plt.figure(figsize=(12, 6))
-                plt.plot(generations, bests, 'g-', label='Best', linewidth=2, marker='o', markersize=3)
-                plt.plot(generations, average, 'b-', label='Average', linewidth=2, marker='s', markersize=3)
-                plt.plot(generations, worsts, 'r-', label='Worst', linewidth=2, marker='^', markersize=3)
+                # Create figure with explicit settings
+                fig, ax = plt.subplots(figsize=(12, 6))
+                ax.plot(generations, bests, 'g-', label='Best', linewidth=2, marker='o', markersize=3)
+                ax.plot(generations, average, 'b-', label='Average', linewidth=2, marker='s', markersize=3)
+                ax.plot(generations, worsts, 'r-', label='Worst', linewidth=2, marker='^', markersize=3)
                 
-                plt.xlabel('Generation')
-                plt.ylabel('Fitness Value')
-                plt.title(f'Real-time Fitness Evolution - Generation {self.current_generation}')
-                plt.legend()
-                plt.grid(True, alpha=0.3)
+                ax.set_xlabel('Generation')
+                ax.set_ylabel('Fitness Value')
+                ax.set_title(f'Real-time Fitness Evolution - Generation {self.current_generation}')
+                ax.legend()
+                ax.grid(True, alpha=0.3)
+                
                 plt.tight_layout()
-                plt.show()
+                
+                # Force display in Colab
+                display(fig)
+                plt.close(fig)  # Close to prevent memory issues
                 
                 # Print current statistics
-                print(f"Generation {self.current_generation}:")
-                print(f"  Best Fitness: {bests[-1]:.6f}")
-                print(f"  Average Fitness: {average[-1]:.6f}")
-                print(f"  Worst Fitness: {worsts[-1]:.6f}")
+                print(f"📊 Generation {self.current_generation}:")
+                print(f"  🟢 Best Fitness: {bests[-1]:.6f}")
+                print(f"  🔵 Average Fitness: {average[-1]:.6f}")
+                print(f"  🔴 Worst Fitness: {worsts[-1]:.6f}")
+                
+                if len(bests) > 1:
+                    improvement = ((bests[0] - bests[-1]) / abs(bests[0]) * 100) if bests[0] != 0 else 0
+                    print(f"  📈 Improvement: {improvement:.2f}%")
+                    
                 print("-" * 50)
                 
         except Exception as e:
-            print(f"Error updating Colab plot: {e}")
+            print(f"❌ Error updating Colab plot: {e}")
+            print("💡 Try restarting runtime if plots aren't appearing")
     
     def finalColabPlot(self):
         """Show final plot in Google Colab"""
@@ -381,5 +412,3 @@ class GeneticAlgorithm:
         """Reset data in file"""
         
         open(path.abspath(self.data_path), "wb").close()
-
-

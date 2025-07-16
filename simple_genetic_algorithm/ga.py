@@ -165,3 +165,7 @@ class GeneticAlgorithm:
         """Reset data in file"""
         
         open(path.abspath(self.data_path), "wb").close()
+
+    def plot_fitness_history(self):
+        """Plot static fitness history from the .npy file for this GA run."""
+        GraphVisualizer.plot_fitness_history(self.data_path)

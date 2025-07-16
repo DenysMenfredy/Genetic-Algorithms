@@ -2,50 +2,45 @@ from simple_genetic_algorithm.ga import GeneticAlgorithm
 from simple_genetic_algorithm.instances import *
 from utils.file import create_folder
 from utils.date import generate_execution_name
-from utils.graph_visualizer import GraphVisualizer
+import argparse
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Run Genetic Algorithm with optional CLI parameters.")
+    parser.add_argument('--size_pop', type=int, default=100, help='Population size')
+    parser.add_argument('--generations', type=int, default=100, help='Number of generations')
+    parser.add_argument('--crossover_rate', type=float, default=0.9, help='Crossover rate')
+    parser.add_argument('--mutation_rate', type=float, default=0.05, help='Mutation rate')
+    parser.add_argument('--agent_dimension', type=int, default=10, help='Agent dimension')
+    parser.add_argument('--enable_interactive_plot', action='store_true', help='Enable interactive plotting')
+    args = parser.parse_args()
+
     create_folder('data') 
     execution_name = generate_execution_name() 
 
-    colab_params = {
-        "size_pop": 200,
-        "generations": 100,
-        "crossover_rate": 0.85,
-        "mutation_rate": 0.03,
-        "agent": Rastrigin,  # Your agent class
-        "agent_dimension": 10,
-        "execution_name": f"colab_{execution_name}",
-        "enable_interactive_plot": True,
-        "colab_mode": True,  # Enable Colab mode
-    }
- 
-    # agent params
-    regular_params = {
-        "size_pop": 500,
-        "generations": 200,
-        "crossover_rate": 0.4,
-        "mutation_rate": 0.3,
-        "agent_dimension": 10,
+    params = {
+        "size_pop": args.size_pop,
+        "generations": args.generations,
+        "crossover_rate": args.crossover_rate,
+        "mutation_rate": args.mutation_rate,
+        "agent_dimension": args.agent_dimension,
         "agent": Rastrigin,
         "execution_name": execution_name,
-        "enable_interactive_plot": True,  # Enable interactive plotting
-        "plot_update_interval": 100  # Update interval in milliseconds
+        "enable_interactive_plot": args.enable_interactive_plot,
+        "plot_update_interval": 100
     }
-    
-    # Detect if running in Colab
-    try:
-        import google.colab
-        print("Running in Google Colab")
-        params = colab_params
-    except ImportError:
-        print("Running in regular Python environment")
-        params = regular_params
-    
+
+    print("Using parameters:")
+    for k, v in params.items():
+        if k == "agent":
+            print(f"  {k}: {v.__name__}")
+        else:
+            print(f"  {k}: {v}")
+
     genetic_algorithm = GeneticAlgorithm(**params) 
     solution = genetic_algorithm.start()
     print(solution)
+    genetic_algorithm.plot_fitness_history()
     
 
 if __name__ == '__main__':

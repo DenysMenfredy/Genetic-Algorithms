@@ -40,3 +40,35 @@ class GraphVisualizer:
     def close(self):
         plt.ioff()
         plt.show() 
+
+    @staticmethod
+    def plot_fitness_history(npy_file_path):
+        """Plot static fitness history (best, average, worst) from a .npy file."""
+        bests, avgs, worsts = [], [], []
+        try:
+            with open(npy_file_path, "rb") as f:
+                gen = 0
+                while True:
+                    try:
+                        arr = np.load(f)
+                        bests.append(np.min(arr))
+                        avgs.append(np.mean(arr))
+                        worsts.append(np.max(arr))
+                        gen += 1
+                    except (ValueError, EOFError):
+                        break
+        except Exception as e:
+            print(f"Error reading file: {e}")
+            return
+        generations = np.arange(len(bests))
+        plt.figure(figsize=(10, 6))
+        plt.plot(generations, bests, 'g-', label='Best', linewidth=2)
+        plt.plot(generations, avgs, 'b-', label='Average', linewidth=2)
+        plt.plot(generations, worsts, 'r-', label='Worst', linewidth=2)
+        plt.xlabel('Generation')
+        plt.ylabel('Fitness Value')
+        plt.title('Fitness Evolution per Generation')
+        plt.legend()
+        plt.grid(True, alpha=0.3)
+        plt.tight_layout()
+        plt.show() 

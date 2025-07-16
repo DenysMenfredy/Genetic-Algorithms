@@ -25,3 +25,43 @@ Firstly introduced in 1975 by John Holland in his book *Adaptation in Natural an
 <a id="1">[1]</a> Holland, J.H. (1975) Adaptation in Natural and Artificial Systems. University of Michigan Press, Ann Arbor. (2nd Edition, MIT Press, 1992.).
 
 <a id="2">[2]</a> Goldberg, D.E. (1989) Genetic Algorithms in Search, Optimization, and Machine Learning. Addison-Wesley Longman Publishing Co. Inc., Boston, MA, USA.
+
+## Instructions
+
+### 1. Install dependencies
+
+This project uses [uv](https://github.com/astral-sh/uv) for fast Python package management. To install dependencies, run:
+
+```
+uv pip install -r pyproject.toml
+```
+
+Or, if you want to use the lockfile:
+
+```
+uv pip install -r uv.lock
+```
+
+### 2. Run the Genetic Algorithm
+
+To run the main script with default parameters:
+
+```
+uv python main.py
+```
+
+To customize parameters, pass them as CLI arguments. For example:
+
+```
+uv python main.py --size_pop 300 --generations 150 --crossover_rate 0.7 --mutation_rate 0.05 --agent_dimension 20 --enable_interactive_plot
+```
+
+**Available CLI arguments:**
+- `--size_pop` (int): Population size
+- `--generations` (int): Number of generations
+- `--crossover_rate` (float): Crossover rate
+- `--mutation_rate` (float): Mutation rate
+- `--agent_dimension` (int): Agent dimension
+- `--enable_interactive_plot`: Enable live plotting of fitness metrics
+
+You can combine any of these arguments as needed. If an argument is not provided, the script will use its default value.

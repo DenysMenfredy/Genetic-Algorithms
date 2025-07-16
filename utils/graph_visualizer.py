@@ -1,8 +1,16 @@
+"""GraphVisualizer: Live and static plotting for Genetic Algorithm fitness history.
+
+Requires matplotlib and numpy. Install with:
+    pip install matplotlib numpy
+"""
 import matplotlib.pyplot as plt
 import numpy as np
 
 class GraphVisualizer:
+    """Visualize fitness evolution for Genetic Algorithms, both live and from history files."""
+    # pylint: disable=too-many-instance-attributes
     def __init__(self, num_generations):
+        """Initialize the live plot for a given number of generations."""
         self.num_generations = num_generations
         self.generations = []
         self.bests = []
@@ -22,6 +30,7 @@ class GraphVisualizer:
         plt.show(block=False)
 
     def update(self, generation, fitness_arr):
+        """Update the live plot with fitness data for a new generation."""
         self.generations.append(generation)
         self.bests.append(np.min(fitness_arr))
         self.averages.append(np.mean(fitness_arr))
@@ -38,8 +47,9 @@ class GraphVisualizer:
         self.fig.canvas.flush_events()
 
     def close(self):
+        """Close the live plot and block until the window is closed."""
         plt.ioff()
-        plt.show() 
+        plt.show()
 
     @staticmethod
     def plot_fitness_history(npy_file_path):
@@ -57,7 +67,7 @@ class GraphVisualizer:
                         gen += 1
                     except (ValueError, EOFError):
                         break
-        except Exception as e:
+        except (OSError, FileNotFoundError) as e:
             print(f"Error reading file: {e}")
             return
         generations = np.arange(len(bests))

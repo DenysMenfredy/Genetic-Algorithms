@@ -1,12 +1,16 @@
-from simple_genetic_algorithm.ga import GeneticAlgorithm
-from simple_genetic_algorithm.instances import *
+"""Main entry point for running the Genetic Algorithm with CLI parameters."""
+import argparse
 from utils.file import create_folder
 from utils.date import generate_execution_name
-import argparse
+from simple_genetic_algorithm.ga import GeneticAlgorithm
+import simple_genetic_algorithm.instances as instances
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Run Genetic Algorithm with optional CLI parameters.")
+    """Parse CLI arguments, configure and run the Genetic Algorithm."""
+    parser = argparse.ArgumentParser(
+        description="Run Genetic Algorithm with optional CLI parameters."
+    )
     parser.add_argument('--size_pop', type=int, default=100, help='Population size')
     parser.add_argument('--generations', type=int, default=100, help='Number of generations')
     parser.add_argument('--crossover_rate', type=float, default=0.9, help='Crossover rate')
@@ -15,8 +19,8 @@ def main():
     parser.add_argument('--enable_interactive_plot', action='store_true', help='Enable interactive plotting')
     args = parser.parse_args()
 
-    create_folder('data') 
-    execution_name = generate_execution_name() 
+    create_folder('data')
+    execution_name = generate_execution_name()
 
     params = {
         "size_pop": args.size_pop,
@@ -24,7 +28,7 @@ def main():
         "crossover_rate": args.crossover_rate,
         "mutation_rate": args.mutation_rate,
         "agent_dimension": args.agent_dimension,
-        "agent": Rastrigin,
+        "agent": instances.Rastrigin,
         "execution_name": execution_name,
         "enable_interactive_plot": args.enable_interactive_plot,
         "plot_update_interval": 100
@@ -37,11 +41,11 @@ def main():
         else:
             print(f"  {k}: {v}")
 
-    genetic_algorithm = GeneticAlgorithm(**params) 
+    genetic_algorithm = GeneticAlgorithm(**params)
     solution = genetic_algorithm.start()
     print(solution)
     genetic_algorithm.plot_fitness_history()
-    
+
 
 if __name__ == '__main__':
     main()

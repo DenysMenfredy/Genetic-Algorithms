@@ -1,3 +1,4 @@
+"""File utility functions for checking paths and creating folders."""
 from pathlib import Path
 
 
@@ -28,6 +29,6 @@ def create_folder(path_str: str) -> bool:
         path_obj = Path(path_str)
         path_obj.mkdir(parents=True, exist_ok=True)
         return True
-    except Exception as e:
+    except OSError as e:
         print(f"Error creating folder '{path_str}': {e}")
         return False

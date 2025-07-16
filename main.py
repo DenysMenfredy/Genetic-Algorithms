@@ -1,9 +1,11 @@
 """Main entry point for running the Genetic Algorithm with CLI parameters."""
 import argparse
-from utils.file import create_folder
-from utils.date import generate_execution_name
+import sys
+import os
+from simple_genetic_algorithm.utils.file import create_folder
+from simple_genetic_algorithm.utils.date import generate_execution_name
 from simple_genetic_algorithm.ga import GeneticAlgorithm
-import simple_genetic_algorithm.instances as instances
+from simple_genetic_algorithm import instances
 
 
 def main():
@@ -16,7 +18,10 @@ def main():
     parser.add_argument('--crossover_rate', type=float, default=0.9, help='Crossover rate')
     parser.add_argument('--mutation_rate', type=float, default=0.05, help='Mutation rate')
     parser.add_argument('--agent_dimension', type=int, default=10, help='Agent dimension')
-    parser.add_argument('--enable_interactive_plot', action='store_true', help='Enable interactive plotting')
+    parser.add_argument(
+        '--enable_interactive_plot', action='store_true',
+        help='Enable interactive plotting'
+    )
     args = parser.parse_args()
 
     create_folder('data')

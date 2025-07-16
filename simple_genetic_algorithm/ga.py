@@ -2,7 +2,7 @@
 import os
 import random
 import numpy as np
-from simple_genetic_algorithm.utils.graph_visualizer import GraphVisualizer
+from utils.graph_visualizer import GraphVisualizer
 
 class GeneticAlgorithm:
     """A simple Genetic Algorithm with live fitness plotting support."""

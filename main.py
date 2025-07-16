@@ -1,7 +1,5 @@
 """Main entry point for running the Genetic Algorithm with CLI parameters."""
 import argparse
-import sys
-import os
 from utils.file import create_folder
 from utils.date import generate_execution_name
 from simple_genetic_algorithm.ga import GeneticAlgorithm

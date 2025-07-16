@@ -2,8 +2,8 @@
 import argparse
 import sys
 import os
-from simple_genetic_algorithm.utils.file import create_folder
-from simple_genetic_algorithm.utils.date import generate_execution_name
+from utils.file import create_folder
+from utils.date import generate_execution_name
 from simple_genetic_algorithm.ga import GeneticAlgorithm
 from simple_genetic_algorithm import instances
 

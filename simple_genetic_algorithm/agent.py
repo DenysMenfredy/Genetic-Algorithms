@@ -14,8 +14,11 @@ class Agent:
     def random_chromosome(self):
         """Generate a random chromosome."""
         if self.dimension is None or self.lowest_limit is None or self.higher_limit is None:
-            raise ValueError("dimension, lowest_limit, and higher_limit must be set for random chromosome generation.")
-        return [uniform(self.lowest_limit, self.higher_limit) for _ in range(self.dimension)]
+            raise ValueError("Invalid parameters for random chromosome generation.")
+        return [
+            uniform(self.lowest_limit, self.higher_limit)
+            for _ in range(self.dimension)
+        ]
 
     def fitness_function(self):
         """Agent fitness function (to be implemented by subclasses)."""

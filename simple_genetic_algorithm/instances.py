@@ -2,6 +2,8 @@
 import numpy as np
 from simple_genetic_algorithm.agent import Agent
 
+# pylint: disable=too-few-public-methods
+
 class HolderTable(Agent):
     """HolderTable function instance for optimization."""
     higher_limit = 10
@@ -48,5 +50,3 @@ class Rastrigin(Agent):
                 for x_i in self.chromosome
             )
         )
-
-# pylint: disable=too-few-public-methods

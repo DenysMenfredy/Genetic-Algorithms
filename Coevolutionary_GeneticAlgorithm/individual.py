@@ -17,8 +17,22 @@ class Individual:
     def calc_fitness(self):
         """Calculate the EggHolder fitness value for this individual."""
         return -(
-            (self.cromossomo[1] + 47) * np.sin(np.sqrt(abs(self.cromossomo[1] + (self.cromossomo[0] / 2) + 47)))
-            + self.cromossomo[0] * np.sin(np.sqrt(abs(self.cromossomo[0] - (self.cromossomo[1] + 47))))
+            (self.cromossomo[1] + 47)
+            * np.sin(
+                np.sqrt(
+                    abs(
+                        self.cromossomo[1] + (self.cromossomo[0] / 2) + 47
+                    )
+                )
+            )
+            + self.cromossomo[0]
+            * np.sin(
+                np.sqrt(
+                    abs(
+                        self.cromossomo[0] - (self.cromossomo[1] + 47)
+                    )
+                )
+            )
         )
 
     def copia(self):
@@ -29,4 +43,5 @@ class Individual:
 
     def __str__(self):
         """String representation of the individual."""
-        return f'Cromossomo: {self.cromossomo}\nGeração: {self.geracao}\nFitness: {self.fitness}\n'
+        return f'Cromossomo: {self.cromossomo}\nGeração: {self.geracao}\nFitness: {self.fitness}\n' 
+        
